@@ -182,7 +182,7 @@ It is formatted as a Pandas DataFrame, containing the following columns :
 - relation : The relation Name
 - ArgX : The annotated entitie which a linked by the relation, each column refer to an entitie, the entitie id correspond to the annotations DataFrame "type_id" column
 
-#### Read and write annotations
+#### Read and write annotations
 
 
 ##### Getting annotations data
