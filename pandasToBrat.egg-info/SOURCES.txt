@@ -1,0 +1,8 @@
+CHANGES.txt
+MANIFEST.in
+README.md
+setup.py
+pandasToBrat.egg-info/PKG-INFO
+pandasToBrat.egg-info/SOURCES.txt
+pandasToBrat.egg-info/dependency_links.txt
+pandasToBrat.egg-info/top_level.txt

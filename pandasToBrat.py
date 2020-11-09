@@ -16,7 +16,7 @@ def _getDictionnaryKeys(dictionnary):
     return(keys_array)
 
 class pandasToBrat:
-    
+
     """
         Class for Pandas brat folder management.
         For each brat folder, there is an instance of pandasToBrat.
@@ -409,6 +409,19 @@ class pandasToBrat:
             
                
     def write_relations(self, df, text_id, relation, overwrite = False):
+        
+        """
+            write_relations
+            Send relations data from the brat folder. Useful to pre-anotate some data.
+
+            input :
+                df, pd.Dataframe : dataframe containing relations data, should contains the text id, the relation name, the if of the linked annotations.
+                text_id, str : name of the column in df which contains the document id
+                relation, str : name of the column in df which contains the relation name
+                overwrite, boolean : if True, the current annotation files are replaced by new data, otherwise, the new annotations are merged with existing one
+
+                The other columns should contains the type_id of related entities, as outputed by the read_annotation method.
+        """
         
         # Checking data types
         if (type(df) == type(pd.DataFrame())):
