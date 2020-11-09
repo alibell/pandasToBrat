@@ -16,7 +16,6 @@ def _getDictionnaryKeys(dictionnary):
     return(keys_array)
 
 class pandasToBrat:
-    
     """
         Class for Pandas brat folder management.
         For each brat folder, there is an instance of pandasToBrat.
