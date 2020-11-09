@@ -34,7 +34,7 @@ Clone the current repository :
 Install dependencies with pip.
 
 ```
-    pip -r requirements.txt
+    pip install -r requirements.txt
 ```
 
 Then install the library :
