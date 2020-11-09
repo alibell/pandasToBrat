@@ -28,7 +28,7 @@ pandasToBrat is a library to manage brat configuration and brat data from a Pyth
 
 Clone the current repository :
 ```
-    git clone [LIBRARY_PATH]
+    git clone https://gogs.alibellamine.me/alibell/pandasToBrat
 ```
 
 Install dependencies with pip.
