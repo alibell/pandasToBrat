@@ -7,7 +7,7 @@ _Last version : 1.0 - 28/10/2020_
 
 pandasToBrat is a library to manage brat configuration and brat data from a Python interface.
 
-### What can it do ?
+### What can it do ?
 
 - Reading brat annotations and relations configuration to python dictionnary
 - Writting brat annotations and relations configuration from python dictionnary
