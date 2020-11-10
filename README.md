@@ -15,6 +15,7 @@ pandasToBrat is a library to manage brat configuration and brat data from a Pyth
 - Writting brat text file from python pandas Series
 - Reading brat annotations and relations 
 - Writting brat annotations and relations from python pandas DataFrame
+- Export data to ConLL-2003 format
 
 ### What it doesn't support ?
 
@@ -97,7 +98,7 @@ Each entrie of the dictionnary is a relation.
 Each relation have a relation name and defined with a sub-dictionnary containing an args entrie.
 The args entrie contains a list of entities that are concerned by the relation.
 
-#### Read and write parameters
+####  Read and write parameters
 
 ##### Getting parameters
 
@@ -220,3 +221,30 @@ The text_id and relation are the name of the column inside the dataframe which c
 The other columns should contains the type_id of related entities, as outputed by the read_annotation method.
 
 The overwrite option can be set as True to overwrite existing annotations, otherwise the dataframe's data are added to existing annotations data.
+
+### Export data to standard format
+
+The only currently supported format is ConLL-2003.
+
+To export data, you can use the export method.
+
+```
+    bratData.export(export_format = EXPORT_FORMAT, tokenizer = TOKENIZER, keep_empty = KEEP_EMPTY_OPTION)
+```
+
+The export_format parameter is used to specify the export format. The only one, which is the default one, supported is ConLL-2003.
+The tokenizer parameter contains the tokenizer functions. Tokenizers functions are stored in pandasToBrat.extract_tools. The aim of the function is to generate tokens and pos tag from text. The default one, _default_tokenizer_, is the simplest one, that split on space and new line character.
+You can also use Spacy tokenizer, in that case you should import the spacy_tokenizer functions as demonstrated in this example :
+
+```
+    from pandasToBrat.extract_tools import spacy_tokenizer
+    import spacy
+
+    nlp = spacy.load(SPACY_MODEL)
+    spacy_tokenizer_loaded = spacy_tokenizer(nlp)
+
+    bratData.export(tokenizer = spacy_tokenizer_loaded)
+```
+
+Finally, the keep_empty option is defaultly set as False. This means that every empty tokens will be removed from the exported data.
+You can set it as True if you want to keep empty tokens.

@@ -2,6 +2,7 @@ import re
 import os
 import pandas as pd
 import numpy as np
+from pandasToBrat.extract_tools import default_tokenizer
 
 def _getDictionnaryKeys(dictionnary):
     """
@@ -520,3 +521,180 @@ class pandasToBrat:
             
         else:
             raise ValueError('Incorrect variable type, expected a Pandas DF.')
+
+    def _export_conll_2003 (self, data):
+
+        '''
+            Internal function for export in conll format.
+        '''
+
+        # Creating i-label
+        data["i-label"] = (data["label"] != "O").astype(int)*(data["i-type"]+'-')+data["label"]
+        
+        # Creating string
+        data["str"] = data[["token","pos","chunks","i-label"]].apply(lambda x: ' '.join(x), axis = 1)
+        
+        connll_str = "-DOCSTART- -X- -X- O"+"\n\n"+"\n\n".join(
+            data.groupby("id").agg(lambda x: "\n".join(x))["str"].values.tolist()
+        )
+        
+        return(connll_str)
+
+    def _get_tokenized_data(self, text_data, annotations_data, tokenizer = default_tokenizer, keep_empty = False):
+        
+        '''
+            Internal function that process text and annotation data to calculate token, pos and chunks.
+            
+            Input :
+                text_data : text data exported from current class
+                annotations_data : annotations data exported from current class
+                tokenizer : tokenizer function from extract_tools
+                keep_empty : default False, parameter boolean, if True empty token are not removed, otherwise they are removed
+            Output :
+                Aggreged data in Pandas DataFrame.
+        '''
+
+        # Applying tokenizer to text
+        text_data["tokens"] = text_data["text_data"].apply(tokenizer)
+
+        # Exploding dataframe by tokens and rename column
+        exploded_text_data = text_data[["id", "tokens"]].explode("tokens").reset_index(drop = True)
+        exploded_text_data = exploded_text_data.join(
+            exploded_text_data["tokens"] \
+                .apply(pd.Series) \
+                .rename(columns = {
+                    0:'token',1:'start_offset',2:'end_offset', 3:'pos'
+                })
+        ) \
+        .drop(columns = ["tokens"])
+                
+        # Getting entities from annotations
+        
+        ## We merge by offset
+        
+        ### Creating a word id and annotation id
+        exploded_text_data = exploded_text_data \
+                            .reset_index(drop = True) \
+                            .reset_index() \
+                            .rename(columns = {"index":"word_id"})
+        
+        annotations_data = annotations_data \
+                            .reset_index() \
+                            .rename(columns = {"index":"ann_id"})
+        
+        ### Offset of string
+        text_offsets = pd.DataFrame(exploded_text_data[["id","word_id","start_offset","end_offset"]])
+
+        text_offsets["start_offset"] = text_offsets["start_offset"].astype(int)
+        text_offsets["end_offset"] = text_offsets["end_offset"].astype(int)
+        text_offsets["offsets"] = text_offsets \
+            .apply(
+                lambda x: list(range(x["start_offset"], x["end_offset"]+1)), axis = 1
+            )
+        text_offsets = text_offsets[["id","word_id", "offsets"]] \
+                        .explode("offsets")
+        
+        ### Offset of annotations
+        
+        ann_offsets = pd.DataFrame(
+            annotations_data[["id", "ann_id", "start", "end"]]
+        )
+        ann_offsets["start"] = ann_offsets["start"].astype(int)
+        ann_offsets["end"] = ann_offsets["end"].astype(int)
+        ann_offsets["offsets"] = ann_offsets \
+            .apply(
+                lambda x: list(range(x["start"], x["end"]+1)), axis = 1
+            )
+        
+        ann_offsets = ann_offsets[["id","ann_id", "offsets"]] \
+                        .explode("offsets")
+            
+        # Merging by term
+        
+        text_offsets["uid"] = text_offsets["id"].astype(str) \
+                            + text_offsets["offsets"].astype(str)
+        
+        ann_offsets["uid"] = ann_offsets["id"].astype(str) \
+                            + ann_offsets["offsets"].astype(str)
+        
+        merged_id = text_offsets \
+                    .join(
+                        ann_offsets[["ann_id","uid"]].set_index("uid"), 
+                        on = "uid"
+                    ) \
+                    .dropna()
+        merged_id["ann_id"] = merged_id["ann_id"].astype(int)
+        
+        merged_id = merged_id[["word_id", "ann_id"]] \
+            .set_index("ann_id") \
+            .drop_duplicates() \
+            .join(annotations_data, on = "ann_id")
+        
+        # Keeping last when duplicate word_id
+        
+        merged_id = merged_id \
+            .drop_duplicates("word_id", keep = "last")
+        
+        # Joining annotation with word id
+
+        output_df = exploded_text_data \
+            .join(merged_id[["label","word_id"]] \
+                .set_index("word_id"), 
+                on = "word_id",
+                how = "left") \
+            .fillna("O")[["id", "token","label", "pos"]]
+        
+        # Creation of i-type : if O : i-type is B
+        output_df["i-type"] = output_df \
+            .groupby("id").agg(lambda x: ["B"]+["I"]*(len(x)-1))["label"].explode().reset_index()["label"]
+        output_df.loc[output_df["label"] == "O", "i-type"] = 'B'
+        
+        # Empty chunks
+        output_df["chunks"] = 'O'
+
+        # Post - processing
+        if (keep_empty == False):
+            output_df = output_df[output_df["token"] != ''].reset_index(drop = True)
+        
+        return(output_df)
+
+    def export(self, export_format = "conll-2003", tokenizer = default_tokenizer, keep_empty = False):
+
+        '''
+            Function that generate an export file.
+            Supported export format are :
+                - conll-2003
+
+            input :
+                export_format : name of the export format
+                tokenizer : tokenizer function from extract_tools
+                keep_empty : default False, parameter boolean, if True empty token are not removed, otherwise they are removed
+            Output :
+                str : output string in selected export format
+        '''
+
+        supported_export_format = {
+            "conll-2003":self._export_conll_2003
+        }
+            
+        # Check the export format
+        if (export_format not in supported_export_format.keys()):
+            raise Exception(str(export_format)+" format not supported. Export format should be one of these : {}".format(
+            ", ".join(supported_export_format.keys())  
+            ))
+        
+        # Create dataframe of tokenized word associated with annotations
+        ## Getting data from brat
+        text_data = self.read_text()
+        annotations_data = self.read_annotation()["annotations"]
+        
+        ## Parsing data
+        data = self._get_tokenized_data(tokenizer=tokenizer, 
+                                    text_data = text_data, 
+                                    annotations_data = annotations_data, 
+                                    keep_empty = keep_empty)
+
+        # Execute the export format associated function
+        data_str = supported_export_format[export_format](data = data)
+
+        return(data_str)
