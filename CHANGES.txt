@@ -1,1 +1,4 @@
+1.1 (11-10-2020)
+    Adding : export feature to ConLL format
+    Adding : LICENSE
 1.0 Initial release
