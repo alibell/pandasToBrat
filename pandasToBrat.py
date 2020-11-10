@@ -601,11 +601,15 @@ class pandasToBrat:
         )
         ann_offsets["start"] = ann_offsets["start"].astype(int)
         ann_offsets["end"] = ann_offsets["end"].astype(int)
-        ann_offsets["offsets"] = ann_offsets \
-            .apply(
-                lambda x: list(range(x["start"], x["end"]+1)), axis = 1
-            )
-        
+
+        if (ann_offsets.shape[0] > 0):
+            ann_offsets["offsets"] = ann_offsets \
+                .apply(
+                    lambda x: list(range(x["start"], x["end"]+1)), axis = 1
+                )
+        else:
+            ann_offsets["offsets"] = ''
+
         ann_offsets = ann_offsets[["id","ann_id", "offsets"]] \
                         .explode("offsets")
             
@@ -658,7 +662,7 @@ class pandasToBrat:
         
         return(output_df)
 
-    def export(self, export_format = "conll-2003", tokenizer = default_tokenizer, keep_empty = False):
+    def export(self, export_format = "conll-2003", tokenizer = default_tokenizer, keep_empty = False, entities = None):
 
         '''
             Function that generate an export file.
@@ -669,6 +673,7 @@ class pandasToBrat:
                 export_format : name of the export format
                 tokenizer : tokenizer function from extract_tools
                 keep_empty : default False, parameter boolean, if True empty token are not removed, otherwise they are removed
+                entities : if None, all entities are send to the export file, if there is the conflict the most recent is used, otherwise the entities are selected before
             Output :
                 str : output string in selected export format
         '''
@@ -687,6 +692,14 @@ class pandasToBrat:
         ## Getting data from brat
         text_data = self.read_text()
         annotations_data = self.read_annotation()["annotations"]
+
+        ## Filtering entities
+        if entities is not None:
+            if type(entities) != type(list()):
+                raise Exception("entities should be of type list")
+
+            annotations_data = annotations_data[annotations_data["label"].isin(entities)] \
+                                                                         .reset_index(drop = True)
         
         ## Parsing data
         data = self._get_tokenized_data(tokenizer=tokenizer, 

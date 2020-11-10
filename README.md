@@ -229,7 +229,7 @@ The only currently supported format is ConLL-2003.
 To export data, you can use the export method.
 
 ```
-    bratData.export(export_format = EXPORT_FORMAT, tokenizer = TOKENIZER, keep_empty = KEEP_EMPTY_OPTION)
+    bratData.export(export_format = EXPORT_FORMAT, tokenizer = TOKENIZER, entities = ENTITIES_OPTION, keep_empty = KEEP_EMPTY_OPTION)
 ```
 
 The export_format parameter is used to specify the export format. The only one, which is the default one, supported is ConLL-2003.
@@ -245,6 +245,8 @@ You can also use Spacy tokenizer, in that case you should import the spacy_token
 
     bratData.export(tokenizer = spacy_tokenizer_loaded)
 ```
+
+You can restrict the export to a limited set of entities. For that, the list of entities are specified in the entities parameter. If set as None, which is the default value, all entities will we considered. If a word contains many entities, the last one is kept.
 
 Finally, the keep_empty option is defaultly set as False. This means that every empty tokens will be removed from the exported data.
 You can set it as True if you want to keep empty tokens.
