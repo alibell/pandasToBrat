@@ -1,3 +1,5 @@
+1.1.1 (11-10-2020)
+    Adding the option to filter export for specified entities.
 1.1 (11-10-2020)
     Adding : export feature to ConLL format
     Adding : LICENSE
