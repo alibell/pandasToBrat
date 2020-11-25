@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: pandasToBrat
-Version: 1.0
+Version: 1.1.1
 Summary: Function for Brat folder administration from Python and Pandas object.
 Home-page: UNKNOWN
 Author: Ali BELLAMINE
@@ -15,7 +15,7 @@ Description: # pandasToBrat
         
         pandasToBrat is a library to manage brat configuration and brat data from a Python interface.
         
-        ### What can it do ?
+        ### What can it do ?
         
         - Reading brat annotations and relations configuration to python dictionnary
         - Writting brat annotations and relations configuration from python dictionnary
@@ -23,6 +23,7 @@ Description: # pandasToBrat
         - Writting brat text file from python pandas Series
         - Reading brat annotations and relations 
         - Writting brat annotations and relations from python pandas DataFrame
+        - Export data to ConLL-2003 format
         
         ### What it doesn't support ?
         
@@ -36,7 +37,7 @@ Description: # pandasToBrat
         
         Clone the current repository :
         ```
-            git clone [LIBRARY_PATH]
+            git clone https://gogs.alibellamine.me/alibell/pandasToBrat
         ```
         
         Install dependencies with pip.
@@ -105,7 +106,7 @@ Description: # pandasToBrat
         Each relation have a relation name and defined with a sub-dictionnary containing an args entrie.
         The args entrie contains a list of entities that are concerned by the relation.
         
-        #### Read and write parameters
+        ####  Read and write parameters
         
         ##### Getting parameters
         
@@ -190,7 +191,7 @@ Description: # pandasToBrat
         - relation : The relation Name
         - ArgX : The annotated entitie which a linked by the relation, each column refer to an entitie, the entitie id correspond to the annotations DataFrame "type_id" column
         
-        #### Read and write annotations
+        #### Read and write annotations
         
         
         ##### Getting annotations data
@@ -228,4 +229,33 @@ Description: # pandasToBrat
         The other columns should contains the type_id of related entities, as outputed by the read_annotation method.
         
         The overwrite option can be set as True to overwrite existing annotations, otherwise the dataframe's data are added to existing annotations data.
+        
+        ### Export data to standard format
+        
+        The only currently supported format is ConLL-2003.
+        
+        To export data, you can use the export method.
+        
+        ```
+            bratData.export(export_format = EXPORT_FORMAT, tokenizer = TOKENIZER, entities = ENTITIES_OPTION, keep_empty = KEEP_EMPTY_OPTION)
+        ```
+        
+        The export_format parameter is used to specify the export format. The only one, which is the default one, supported is ConLL-2003.
+        The tokenizer parameter contains the tokenizer functions. Tokenizers functions are stored in pandasToBrat.extract_tools. The aim of the function is to generate tokens and pos tag from text. The default one, _default_tokenizer_, is the simplest one, that split on space and new line character.
+        You can also use Spacy tokenizer, in that case you should import the spacy_tokenizer functions as demonstrated in this example :
+        
+        ```
+            from pandasToBrat.extract_tools import spacy_tokenizer
+            import spacy
+        
+            nlp = spacy.load(SPACY_MODEL)
+            spacy_tokenizer_loaded = spacy_tokenizer(nlp)
+        
+            bratData.export(tokenizer = spacy_tokenizer_loaded)
+        ```
+        
+        You can restrict the export to a limited set of entities. For that, the list of entities are specified in the entities parameter. If set as None, which is the default value, all entities will we considered. If a word contains many entities, the last one is kept.
+        
+        Finally, the keep_empty option is defaultly set as False. This means that every empty tokens will be removed from the exported data.
+        You can set it as True if you want to keep empty tokens.
 Platform: UNKNOWN

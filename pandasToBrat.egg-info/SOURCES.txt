@@ -2,6 +2,7 @@ CHANGES.txt
 MANIFEST.in
 README.md
 setup.py
+pandasToBrat/__init__.py
 pandasToBrat.egg-info/PKG-INFO
 pandasToBrat.egg-info/SOURCES.txt
 pandasToBrat.egg-info/dependency_links.txt

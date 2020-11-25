@@ -2,7 +2,7 @@ import re
 import os
 import pandas as pd
 import numpy as np
-from pandasToBrat.extract_tools import default_tokenizer
+from pandasToBrat.extract_tools import default_tokenizer as _default_tokenizer
 
 def _getDictionnaryKeys(dictionnary):
     """
@@ -540,7 +540,7 @@ class pandasToBrat:
         
         return(connll_str)
 
-    def _get_tokenized_data(self, text_data, annotations_data, tokenizer = default_tokenizer, keep_empty = False):
+    def _get_tokenized_data(self, text_data, annotations_data, tokenizer = _default_tokenizer, keep_empty = False):
         
         '''
             Internal function that process text and annotation data to calculate token, pos and chunks.
@@ -662,7 +662,7 @@ class pandasToBrat:
         
         return(output_df)
 
-    def export(self, export_format = "conll-2003", tokenizer = default_tokenizer, keep_empty = False, entities = None):
+    def export(self, export_format = "conll-2003", tokenizer = _default_tokenizer, keep_empty = False, entities = None):
 
         '''
             Function that generate an export file.

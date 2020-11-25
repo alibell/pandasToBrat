@@ -1,1 +1,5 @@
 test
+*.egg-info/
+dist/
+pandasToBrat/*.egg-info
+pandasToBrat/extract_tools/*.egg-info

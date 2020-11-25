@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
  
  
-setup(name='pandasToBrat',
- 
-      version='1.1',
+setup(name='pandasToBrat', 
+      version='1.1.1',
       license='',
       author='Ali BELLAMINE',
       author_email='contact@alibellamine.me',
       description='Function for Brat folder administration from Python and Pandas object.',
-      packages=find_packages(),
       long_description=open('README.md').read(),
+      packages = ["pandasToBrat"]
     )
