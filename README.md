@@ -3,6 +3,8 @@
 Ali BELLAMINE - contact@alibellamine.me
 _Last version : 1.0 - 28/10/2020_
 
+Main repository : https://gogs.alibellamine.me/alibell/pandasToBrat/
+
 ## What is pandasToBrat ?
 
 pandasToBrat is a library to manage brat configuration and brat data from a Python interface.
