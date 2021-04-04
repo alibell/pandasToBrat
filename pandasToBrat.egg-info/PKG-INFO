@@ -258,4 +258,5 @@ Description: # pandasToBrat
         
         Finally, the keep_empty option is defaultly set as False. This means that every empty tokens will be removed from the exported data.
         You can set it as True if you want to keep empty tokens.
+        
 Platform: UNKNOWN
