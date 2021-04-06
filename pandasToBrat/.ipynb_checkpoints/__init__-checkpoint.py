@@ -507,7 +507,7 @@ class pandasToBrat:
         if (type(annotations) == type(pd.DataFrame()) and type(relations) == type(pd.DataFrame())):
             
             # Gerenating str
-            data_annotations = _generate_annotations_str(annotations)
+            data_annotations = self._generate_annotations_str(annotations)
             data_relations = relations.groupby("id").agg(lambda x: self._generate_relations_str(x)).iloc[:,0]
 
             # Merging data
