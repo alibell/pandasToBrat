@@ -2,7 +2,7 @@ import re
 import os
 import pandas as pd
 import numpy as np
-from pandasToBrat.extract_tools import default_tokenizer as _default_tokenizer
+from .extract_tools import default_tokenizer as _default_tokenizer
 
 def _getDictionnaryKeys(dictionnary):
     """
