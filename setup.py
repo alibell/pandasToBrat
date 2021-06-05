@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
  
  
 setup(name='pandasToBrat', 
-      version='1.1.2',
+      version='1.1.3',
       license='',
       author='Ali BELLAMINE',
       author_email='contact@alibellamine.me',
